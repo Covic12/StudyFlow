@@ -23,22 +23,25 @@ The course requires at least two examples per milestone of cases where AI was wr
 - [ ] I completed two genuine AI-error examples with detection and fixes.
 - [ ] I updated this log before submitting the milestone.
 
-## Milestone 2 — Database and DAO layer
+## Milestone 3 — Business logic, REST API, OpenAPI and external API
 
-### AI tools and assistance
-- ChatGPT (GPT-6): reviewed the existing project structure and milestone specification; generated the MySQL schema/export, sample data, PDO connection factory, reusable BaseDAO, and six entity DAO classes; updated schema documentation and this repository's AGENTS.md context file.
-- Important prompt: “Continue developing my StudyFlow university Web Programming project. First help me test and verify the complete Milestone 1 implementation, identify and fix any defects, and then begin Milestone 2 according to the original university PDF requirements: implement the MySQL database with at least five entities, primary and foreign keys, sample data, SQL export, and PHP PDO DAO classes with prepared-statement CRUD operations and a reusable base DAO.”
+### AI tools and assisted work
+- ChatGPT (GPT-6): assisted with six entity services, service factory, FlightPHP route registration, Open Library service, OpenAPI 3.0 specification, Swagger UI page, local router and tests.
 
-### Verification and corrections
-- The existing JavaScript files pass Node.js syntax checking. PHP 8.4 is available, but this environment has PDO without the `pdo_mysql` driver and has no MySQL client/server, so live database import and integration tests cannot be run here. PHP syntax checks are run on all DAO/config files; SQL must be imported and exercised in the student's MySQL environment before submission.
-- The first Milestone 1 draft did not include the required root `AGENTS.md`; it has now been added based on the AI-usage instructions on page 5 of the project specification.
-- The original draft ERD used generic category labels in the frontend and did not enforce same-owner foreign-key consistency in the physical schema. The Milestone 2 schema now uses composite owner foreign keys for courses/categories referenced by assignments, notes and sessions.
-- Error/correction 1: The first generated SQL seed reused a commonly seen bcrypt-looking string, but `password_verify('password', $hash)` returned `false`. This was detected with PHP's password verification function; the hash was replaced with a fresh `password_hash('password', PASSWORD_DEFAULT)` result, and `password_verify` then returned `true`.
-- Error/correction 2: The initial composite foreign-key draft used `ON DELETE SET NULL` for `(user_id, category_id)` and `(user_id, course_id)`. MySQL would attempt to null both columns, but `user_id` is `NOT NULL`. This was detected while reviewing the composite FK semantics; the affected relationships now use `ON DELETE RESTRICT`, and the schema documentation explains that dependent references must be cleared/reassigned before deletion.
+### Important prompts / tasks
+- Implement the Milestone 3 requirements from the supplied course specification while preserving the Milestone 2 DAO architecture.
+- Create one service per database entity; ensure routes call services and services call DAOs.
+- Add CRUD routes with JSON responses and status codes, Swagger/OpenAPI documentation, and a fault-tolerant Open Library backend integration.
 
-### Student verification checklist
-- [ ] Import `database/studyflow.sql` into a local MySQL 8+ instance.
-- [ ] Copy `backend/config/config.example.php` to `backend/config/config.php` and enter local credentials.
-- [ ] Verify the sample account password hash and change demo credentials before any deployment.
-- [ ] Run create/read/update/delete tests for all six DAOs against local MySQL.
-- [ ] Add at least two real AI-output issue/correction examples from your own review.
+### AI errors / limitations found and corrected during review
+1. **Service validation rule construction:** an automated edit initially generated malformed PHP associative-array entries for some `fieldRules()` definitions (the owner field was inserted as a numeric array item). PHP lint did not detect this semantic mistake. Reviewing the rule arrays showed the owner field would not be validated as intended; the definitions were corrected and service smoke tests were added.
+2. **Password-hash input trust:** the first UserService draft accepted a caller-supplied `password_hash` field through the DAO allowlist. Code review identified that this would let a client choose a stored hash instead of supplying a password. The service now removes caller-supplied hashes and generates hashes only from a password field; a smoke test verifies the stored hash and confirms the plaintext is not passed to the DAO.
+
+### Verification record
+- [x] PHP syntax check passed for all backend PHP files.
+- [x] `tests/service_smoke_test.php` passed (password hashing, email/password validation, and course progress validation).
+- [x] OpenAPI YAML parsed successfully with the available YAML parser; 14 paths were found.
+- [ ] Install Composer dependencies and test FlightPHP routes on the developer machine.
+- [ ] Test SQL-backed CRUD against MySQL with `pdo_mysql` using `tests/dao_smoke_test.php`.
+- [ ] Test live Open Library connectivity and the provider-timeout/error path.
+- [ ] Student must review the implementation, understand it, and complete the local verification before submission.

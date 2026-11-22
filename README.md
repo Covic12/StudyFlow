@@ -98,3 +98,59 @@ Create and submit a separate branch for each milestone (`milestone1`, `milestone
 
 ## AI usage documentation
 See [`AGENTS.md`](AGENTS.md) for architecture context and [`docs/AI_LOG.md`](docs/AI_LOG.md) for per-milestone AI usage, prompts, verification and correction notes. Review, test and understand every generated file before submission.
+
+
+## Milestone 3 — REST API, services and API documentation
+
+The backend now uses FlightPHP 3. Install dependencies from the project root:
+
+```bash
+composer install
+```
+
+Copy `backend/config/config.example.php` to `backend/config/config.php` and configure the MySQL connection. Import `database/studyflow.sql` into MySQL 8+ first. Then start the local development server from the project root:
+
+```bash
+php -S 127.0.0.1:8000 -t . backend/router.php
+```
+
+API health check: `http://127.0.0.1:8000/api/health`
+
+Swagger UI: `http://127.0.0.1:8000/docs/api/swagger.html`
+
+OpenAPI source: `docs/api/openapi.yaml`
+
+### REST endpoints
+
+All entity endpoints use the `/api/v1` prefix and support `GET collection`, `GET /{id}`, `POST`, `PUT`, `PATCH`, and `DELETE`:
+
+- `/users`
+- `/courses`
+- `/assignments`
+- `/study-sessions`
+- `/notes`
+- `/categories`
+
+Learning resources: `GET /api/v1/resources/search?q=database&limit=10` proxies Open Library Search API and returns normalized book results. The backend applies a request timeout, validates the query, limits results, and returns a friendly `502` response if the provider is unavailable. Failures are written to `backend/logs/error.log` (the logs directory is ignored by Git).
+
+### Layering
+
+`backend/routes/api.php` → `backend/services/*Service.php` → `backend/dao/*DAO.php` → PDO/MySQL. Routes do not call DAOs. Each entity has its own service and validation rules. User passwords supplied during user creation/update are hashed with `password_hash`; password hashes are never included in API read responses.
+
+**Milestone 3 security boundary:** JWT authentication, role authorization and request middleware are Milestone 4 requirements and are not yet active. Run this API only in a local development environment; do not expose it publicly until Milestone 4 is complete. The current entity API is a development CRUD surface, not a production-ready authenticated API.
+
+### Milestone 3 verification
+
+Run the service-level checks:
+
+```bash
+php tests/service_smoke_test.php
+```
+
+Run the DAO integration test after configuring MySQL and enabling `pdo_mysql`:
+
+```bash
+php tests/dao_smoke_test.php
+```
+
+FlightPHP routes require Composer dependencies (`vendor/`). The current development container did not have Composer or `pdo_mysql`, so route execution against MySQL and live external-network testing must be completed on the developer machine.

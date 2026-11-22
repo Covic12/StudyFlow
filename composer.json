@@ -1,0 +1,7 @@
+{
+  "name": "studyflow/student-study-management",
+  "description": "StudyFlow REST API",
+  "type": "project",
+  "require": {"php": ">=8.1", "flightphp/core": "^3.15"},
+  "config": {"optimize-autoloader": true, "sort-packages": true}
+}

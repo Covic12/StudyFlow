@@ -5,9 +5,9 @@ StudyFlow is a student academic and study management SPA with a PHP/MySQL backen
 
 ## Stack
 - Frontend: HTML5, CSS3, vanilla JavaScript, Bootstrap 5.
-- Backend: PHP 8+, PDO; FlightPHP is planned for the presentation layer milestone.
+- Backend: PHP 8+, PDO, FlightPHP 3 (REST presentation layer), Composer.
 - Database: MySQL 8+, InnoDB, utf8mb4.
-- Planned API docs: OpenAPI/Swagger. Planned external provider: Open Library.
+- API docs: OpenAPI 3.0 in `docs/api/openapi.yaml`, rendered by Swagger UI in `docs/api/swagger.html`. External provider: Open Library Search API.
 
 ## Architecture rules
 - Keep frontend assets under `frontend/`; backend PHP under `backend/`; SQL and ERD documentation under `database/`.
@@ -31,5 +31,5 @@ StudyFlow is a student academic and study management SPA with a PHP/MySQL backen
 ## Milestone boundaries
 - Milestone 1: static SPA and draft ERD only; no frontend-to-backend integration.
 - Milestone 2: MySQL schema/export/sample data and PDO DAO CRUD for at least five entities.
-- Milestone 3: services, FlightPHP routes, JSON status codes, OpenAPI/Swagger and backend external API.
+- Milestone 3: services, FlightPHP routes, JSON status codes, OpenAPI/Swagger and backend external API. Routes call services only; services own validation and business rules; services are the only layer that calls DAOs.
 - Milestone 4: authentication, authorization, middleware, logging and connected frontend.
