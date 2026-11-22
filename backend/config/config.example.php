@@ -1,11 +1,12 @@
 <?php
-// Copy to config.php locally. Never commit config.php or real credentials.
+// Copy this file to config.php and replace local values. Never commit config.php.
 return [
     'database' => [
         'host' => '127.0.0.1',
+        'port' => 3306,
         'name' => 'studyflow',
-        'username' => 'your_database_user',
-        'password' => 'your_database_password',
+        'username' => 'studyflow_user',
+        'password' => 'change_me_locally',
         'charset' => 'utf8mb4',
     ],
     'jwt' => ['secret' => 'replace_with_a_long_random_secret'],

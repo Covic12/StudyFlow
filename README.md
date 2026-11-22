@@ -29,7 +29,7 @@ StudyFlow is a responsive single-page web application concept for university stu
 5. Notes
 6. Categories
 
-See [`database/ERD.md`](database/ERD.md) for the draft ERD, attributes and relationship notes.
+See [`database/ERD.md`](database/ERD.md) for the draft ERD and [`database/SCHEMA.md`](database/SCHEMA.md) for the physical MySQL schema. The Milestone 2 export and sample data are in [`database/studyflow.sql`](database/studyflow.sql).
 
 ## Project structure
 ```text
@@ -71,8 +71,14 @@ A static server is recommended because it avoids browser restrictions on local f
 - Settings allows switching between Student and Administrator navigation for demonstration.
 - Learning Resources searches Open Library directly from the browser as a Milestone 1 feature preview. In the final architecture, the external API call will be moved behind a backend service/endpoint as required by the project specification.
 
-## Future backend configuration
-Copy `backend/config/config.example.php` to `backend/config/config.php` when backend development begins, then enter local database credentials and a strong JWT secret. The real configuration file is excluded from Git. Do not commit secrets.
+## Milestone 2: database and DAO layer
+1. Install MySQL 8.0+ and create a local database user.
+2. Import `database/studyflow.sql` using MySQL Workbench or `mysql -u YOUR_USER -p < database/studyflow.sql` (the script creates/selects `studyflow` and recreates its six development tables).
+3. Copy `backend/config/config.example.php` to `backend/config/config.php` and set the local host, port, database name, username and password.
+4. PHP 8+ with PDO and the `pdo_mysql` extension is required.
+5. DAO classes are in `backend/dao/`; load `DAOFactory.php` and call `DAOFactory::courses()` etc. The base class provides prepared-statement create/read/update/delete operations. Pass an authenticated owner ID to `findById`, `findAll`, `update` and `delete` for user-scoped access. Authentication middleware is a later milestone; do not expose DAO access directly to public requests.
+
+The real `config.php` is excluded from Git. Do not commit secrets. Run the DAO integration smoke test after importing the schema and configuring MySQL: `php tests/dao_smoke_test.php`. It creates temporary rows inside a transaction and rolls them back.
 
 ## Roles
 - Student: manages their own academic records.
@@ -82,13 +88,13 @@ Copy `backend/config/config.example.php` to `backend/config/config.php` when bac
 Planned integration: [Open Library Search API](https://openlibrary.org/developers/api). It will support book discovery in the Learning Resources page. The final backend implementation must set timeouts, handle API errors, log failures and return a user-friendly response if the provider is unavailable.
 
 ## API documentation and deployment
-Not available in Milestone 1. The OpenAPI/Swagger documentation and public deployment will be added in later milestones.
+Swagger/OpenAPI documentation and public deployment are not available yet; they are planned for later milestones. The course requires these links in the final README once the documentation and deployment exist.
 
-## Test accounts
-No real accounts exist in this static prototype. The interface uses demonstration identity data only. Test accounts will be created and documented when authentication is implemented.
+## Development sample accounts
+The SQL seed creates `alex@student.edu` (student) and `admin@studyflow.local` (admin). Both seed rows currently use a development password hash intended for the password `password`; verify it with PHP `password_verify()` after import and change these credentials before any public deployment. These SQL sample users are not yet connected to the Milestone 1 demo login. No production authentication exists until Milestone 4.
 
 ## Git milestone workflow
 Create and submit a separate branch for each milestone (`milestone1`, `milestone2`, etc.). For Milestone 1, create a pull request from `milestone1`, add the required reviewer `ibu-web-programming2001`, and do **not** merge the milestone branch into `main` yourself. Follow the course LMS submission instructions.
 
 ## AI usage documentation
-See [`docs/AI_LOG.md`](docs/AI_LOG.md). Review, test and understand every generated file before submission; document the AI assistance and corrections in the milestone log.
+See [`AGENTS.md`](AGENTS.md) for architecture context and [`docs/AI_LOG.md`](docs/AI_LOG.md) for per-milestone AI usage, prompts, verification and correction notes. Review, test and understand every generated file before submission.
