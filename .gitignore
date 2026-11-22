@@ -1,0 +1,26 @@
+# Secrets and local configuration
+backend/config/config.php
+backend/config/*.local.php
+.env
+.env.*
+!.env.example
+
+# Logs and runtime files
+backend/logs/*
+!backend/logs/.gitkeep
+*.log
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Local exports and backups
+*.bak
+*.sql.zip
